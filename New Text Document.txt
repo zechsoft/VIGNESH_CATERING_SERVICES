@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat Widget</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .chat-box {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background-color: #f9f9f9;
+        }
+        .chat-header {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+        .chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+        }
+        .chat-input {
+            display: flex;
+            border-top: 1px solid #ddd;
+        }
+        .chat-input input {
+            flex: 1;
+            border: none;
+            padding: 10px;
+            outline: none;
+        }
+        .chat-input button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+        .chat-input button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-box">
+    <div class="chat-header">AI Chat</div>
+    <div class="chat-messages" id="chatMessages">
+        <div>User: Hello!</div>
+        <div>AI: Hi! How can I assist you today?</div>
+    </div>
+    <div class="chat-input">
+        <input type="text" id="userInput" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+    function sendMessage() {
+        const userInput = document.getElementById('userInput');
+        const chatMessages = document.getElementById('chatMessages');
+
+        if (userInput.value.trim() !== '') {
+            // Display user message
+            const userMessage = document.createElement('div');
+            userMessage.textContent = `User: ${userInput.value}`;
+            chatMessages.appendChild(userMessage);
+
+            // Simulate AI response
+            const aiMessage = document.createElement('div');
+            aiMessage.textContent = `AI: ${generateResponse(userInput.value)}`;
+            chatMessages.appendChild(aiMessage);
+
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Clear input field
+            userInput.value = '';
+        }
+    }
+
+    function generateResponse(message) {
+        // Basic AI response simulation
+        if (message.toLowerCase().includes('hello')) {
+            return 'Hello there! How can I help?';
+        } else if (message.toLowerCase().includes('price')) {
+            return 'Our prices are competitive! Could you specify your needs?';
+        } else {
+            return 'I am here to help with any questions you have!';
+        }
+    }
+</script>
+
+</body>
+</html>
