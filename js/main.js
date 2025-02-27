@@ -106,6 +106,8 @@
             }
         }
     });
+
+    
     document.getElementById('submitBtn').addEventListener('click', function () {
         // Collecting Form Data
         const country = document.querySelectorAll('select')[0].value;

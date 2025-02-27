@@ -69,7 +69,7 @@
                             <a href="contact.html" class="nav-item nav-link">Contact</a>
                         </div>
                         <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button>
-                        <a href="" class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Book Now</a>
+                        <a href="book.html" class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Book Now</a>
                     </div>
                 </nav>
             </div>
@@ -104,8 +104,8 @@
                     <div class="col-lg-7 col-md-12">
                         <small class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-4 animated bounceInDown">Welcome to CaterServ</small>
                         <h1 class="display-1 mb-4 animated bounceInDown">Book <span class="text-primary">Vignesh Cater</span>Serv For Your Dream Event</h1>
-                        <a href="" class="btn btn-primary border-0 rounded-pill py-3 px-4 px-md-5 me-4 animated bounceInLeft">Book Now</a>
-                        <a href="" class="btn btn-primary border-0 rounded-pill py-3 px-4 px-md-5 animated bounceInLeft">Know More</a>
+                        <a href="book.html" class="btn btn-primary border-0 rounded-pill py-3 px-4 px-md-5 me-4 animated bounceInLeft">Book Now</a>
+                        <a href="#moreInfoSection" class="btn btn-primary border-0 rounded-pill py-3 px-4 px-md-5 animated bounceInLeft">Know More</a>
                     </div>
                     <div class="col-lg-5 col-md-12">
                         <img src="img/hero.png" class="img-fluid rounded animated zoomIn" alt="">
@@ -114,10 +114,41 @@
             </div>
         </div>
         <!-- Hero End -->
-
+        <script>
+            // Add smooth scroll behavior for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault(); // Prevent default anchor link behavior
+                    const targetId = this.getAttribute('href').substring(1); // Get the target section ID
+                    const targetElement = document.getElementById(targetId);
+                    
+                    // Scroll to the target element with smooth behavior
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'  // Align the element at the top of the viewport
+                    });
+                });
+            });
+        </script>
+        <script>
+    // Add smooth scroll behavior for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault(); // Prevent default anchor link behavior
+            const targetId = this.getAttribute('href').substring(1); // Get the target section ID
+            const targetElement = document.getElementById(targetId);
+            
+            // Scroll to the target element with smooth behavior
+            targetElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'  // Align the element at the top of the viewport
+            });
+        });
+    });
+</script>
 
         <!-- About Satrt -->
-        <div class="container-fluid py-6">
+        <div id="moreInfoSection" class="container-fluid py-6">
             <div class="container">
                 <div class="row g-5 align-items-center">
                     <div class="col-lg-5 wow bounceInUp" data-wow-delay="0.1s">
@@ -141,7 +172,7 @@
                                 <i class="fas fa-share text-primary me-2"></i>Delicious Deals for Delicious Meals
                             </div>
                         </div>
-                        <a href="" class="btn btn-primary py-3 px-5 rounded-pill">About Us<i class="fas fa-arrow-right ps-2"></i></a>
+                        <a href="about.html" class="btn btn-primary py-3 px-5 rounded-pill">About Us<i class="fas fa-arrow-right ps-2"></i></a>
                     </div>
                 </div>
             </div>
@@ -1107,7 +1138,7 @@
                             <div class="row g-4 form">
                                 <!-- Dropdowns -->
                                 <div class="col-lg-4 col-md-6">
-                                    <select class="form-select border-primary p-2">
+                                    <select class="form-select border-primary p-2" id="country">
                                         <option selected>Select Country</option>
                                         <option value="USA">USA</option>
                                         <option value="UK">UK</option>
@@ -1115,7 +1146,7 @@
                                     </select>
                                 </div>
                                 <div class="col-lg-4 col-md-6">
-                                    <select class="form-select border-primary p-2">
+                                    <select class="form-select border-primary p-2" id="city">
                                         <option selected>Select City</option>
                                         <option value="City1">City 1</option>
                                         <option value="City2">City 2</option>
@@ -1123,7 +1154,7 @@
                                     </select>
                                 </div>
                                 <div class="col-lg-4 col-md-6">
-                                    <select class="form-select border-primary p-2">
+                                    <select class="form-select border-primary p-2" id="palace">
                                         <option selected>Select Palace</option>
                                         <option value="Palace1">Palace 1</option>
                                         <option value="Palace2">Palace 2</option>
@@ -1131,14 +1162,14 @@
                                     </select>
                                 </div>
                                 <div class="col-lg-4 col-md-6">
-                                    <select class="form-select border-primary p-2">
+                                    <select class="form-select border-primary p-2" id="eventType">
                                         <option selected>Event Type</option>
                                         <option value="Small Event">Small Event</option>
                                         <option value="Big Event">Big Event</option>
                                     </select>
                                 </div>
                                 <div class="col-lg-4 col-md-6">
-                                    <select class="form-select border-primary p-2">
+                                    <select class="form-select border-primary p-2" id="noOfGuests">
                                         <option selected>No. Of Guests</option>
                                         <option value="100-200">100-200</option>
                                         <option value="300-400">300-400</option>
@@ -1148,7 +1179,7 @@
                                     </select>
                                 </div>
                                 <div class="col-lg-4 col-md-6">
-                                    <select class="form-select border-primary p-2">
+                                    <select class="form-select border-primary p-2" id="foodPreference">
                                         <option selected>Food Preference</option>
                                         <option value="Vegetarian">Vegetarian</option>
                                         <option value="Non-Vegetarian">Non Vegetarian</option>
@@ -1166,7 +1197,7 @@
                                 </div>
                                 <!-- Submit Button -->
                                 <div class="col-12 text-center">
-                                    <button type="button" id="submitBtn" class="btn btn-primary px-5 py-3 rounded-pill">Submit Now</button>
+                                    <button type="button" id="submitBtn" class="btn btn-primary px-5 py-3 rounded-pill" onclick="submitForm()">Submit Now</button>
                                 </div>
                             </div>
                         </div>
@@ -1177,6 +1208,44 @@
                     </div>
                 </div>
             </div>
+        </div>
+        
+        <!-- JavaScript -->
+        <script>
+            function submitForm() {
+                // Collect values from the form
+                const country = document.getElementById('country').value;
+                const city = document.getElementById('city').value;
+                const palace = document.getElementById('palace').value;
+                const eventType = document.getElementById('eventType').value;
+                const noOfGuests = document.getElementById('noOfGuests').value;
+                const foodPreference = document.getElementById('foodPreference').value;
+                const mobile = document.getElementById('mobile').value;
+                const date = document.getElementById('date').value;
+                const email = document.getElementById('email').value;
+        
+                // Construct message
+                const message = `Hi! I want to book your services. Here's the info:\n
+                Country: ${country}\n
+                City: ${city}\n
+                Palace: ${palace}\n
+                Event Type: ${eventType}\n
+                Number of Guests: ${noOfGuests}\n
+                Food Preference: ${foodPreference}\n
+                Contact No: ${mobile}\n
+                Event Date: ${date}\n
+                Email: ${email}`;
+        
+                // Redirect to WhatsApp with the message
+                const phoneNumber = "9342400879";
+                const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+                window.location.href = whatsappURL;
+            }
+
+
+ // Select the Know More button by its ID
+  </script>
+        
         <!-- Book Us End -->
 
         
