@@ -189,11 +189,11 @@
                             </div>
                             <!-- Submit Button -->
                             <div class="col-12 text-center">
-                                <button type="button" id="submitBtn" class="btn btn-primary px-5 py-3 rounded-pill">Submit Now</button>
+                                <button type="button" id="submitBtn" class="btn btn-primary px-5 py-3 rounded-pill" databookingnumber="9342400879">Submit Now</button>
                             </div>
-                        </div>
-                    </div>
-                </div>
+                            </div>
+                            </div>
+                            </div>
                 <!-- Right Image -->
                 <div class="col-1">
                     <img src="img/background-site.jpg" class="img-fluid h-100 w-100 rounded-end" style="object-fit: cover; opacity: 0.7;" alt="">
@@ -309,6 +309,42 @@
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
     <script>
+    document.getElementById('submitBtn').addEventListener('click', function () {
+        let mobile = document.getElementById('mobile').value;
+        let date = document.getElementById('date').value;
+        let email = document.getElementById('email').value;
+        let bookingNumber = this.getAttribute('databookingnumber'); // Get the booking number
+
+        if (!mobile || !date || !email) {
+            alert('Please fill in all required fields.');
+            return;
+        }
+
+        let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert('Please enter a valid email address.');
+            return;
+        }
+
+        let formData = new FormData(document.getElementById('bookingForm'));
+        formData.append('bookingNumber', bookingNumber); // Add it to the form data
+
+        fetch('your_backend_endpoint', { //Replace your_backend_endpoint
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('Booking information sent successfully!');
+            } else {
+                alert('Failed to send booking information. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again later.');
+        });
+    });
         
     </script>
 

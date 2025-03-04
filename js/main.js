@@ -119,20 +119,20 @@
         const mobile = document.getElementById('mobile').value;
         const date = document.getElementById('date').value;
         const email = document.getElementById('email').value;
-
+    
         // Validation
         if (!mobile.match(/^[6-9]\d{9}$/)) {
             alert("Please enter a valid 10-digit mobile number.");
             return;
         }
-
+    
         // Forming the Message
         const message = `Booking Details:\nCountry: ${country}\nCity: ${city}\nPalace: ${palace}\nEvent Type: ${eventType}\nGuests: ${guests}\nFood: ${food}\nMobile: ${mobile}\nDate: ${date}\nEmail: ${email}`;
-
+    
         // WhatsApp API URL
-        const phoneNumber = "+918973020655";
+        const phoneNumber = "+919342400879";
         const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-
+    
         // Redirecting to WhatsApp
         window.open(url, '_blank');
     });
