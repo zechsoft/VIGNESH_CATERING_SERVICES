@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Health Endpoint Explorer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #0069d9;
+        }
+        .response-container {
+            margin-top: 20px;
+        }
+        .success {
+            color: #28a745;
+        }
+        .error {
+            color: #dc3545;
+        }
+        #headers-info, #response-data {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>API Health Endpoint Explorer</h1>
+        
+        <div>
+            <h2>Test Working Endpoint</h2>
+            <button id="check-health">Test /api/health</button>
+            <button id="clear-results">Clear Results</button>
+        </div>
+        
+        <div class="response-container">
+            <h3>Results:</h3>
+            <div id="results"></div>
+            
+            <h3 id="headers-title" style="display:none;">Response Headers:</h3>
+            <pre id="headers-info"></pre>
+            
+            <h3 id="response-title" style="display:none;">Response Data:</h3>
+            <pre id="response-data"></pre>
+        </div>
+        
+        <div class="implementation-guide">
+            <h2>Implementation Guide</h2>
+            <pre id="implementation-code">// Sample Express.js implementation for the health endpoint
+                
+const express = require('express');
+const router = express.Router();
+
+// Health check endpoint
+router.get('/health', (req, res) => {
+  res.json({
+    status: "OK",
+    uploads: {
+      images: true,
+      videos: true
+    },
+    // Consider adding these additional fields for a more comprehensive health check
+    database: {
+      status: "connected",
+      latency: "15ms"
+    },
+    apiVersion: "1.0.0",
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || "development"
+  });
+});
+
+module.exports = router;
+
+// Then in your main app.js or index.js file:
+app.use('/api', require('./routes/health'));</pre>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const resultsDiv = document.getElementById('results');
+            const headersInfo = document.getElementById('headers-info');
+            const responseData = document.getElementById('response-data');
+            const headersTitle = document.getElementById('headers-title');
+            const responseTitle = document.getElementById('response-title');
+            
+            function displayMessage(message, isError = false) {
+                const p = document.createElement('p');
+                p.textContent = message;
+                p.className = isError ? 'error' : 'success';
+                resultsDiv.appendChild(p);
+            }
+            
+            document.getElementById('check-health').addEventListener('click', async () => {
+                resultsDiv.innerHTML = '';
+                headersInfo.style.display = 'none';
+                responseData.style.display = 'none';
+                headersTitle.style.display = 'none';
+                responseTitle.style.display = 'none';
+                
+                const apiUrl = 'https://catering-backend-6dyl.onrender.com/api/health';
+                
+                try {
+                    displayMessage(`Testing ${apiUrl}...`);
+                    
+                    const startTime = performance.now();
+                    const response = await fetch(apiUrl);
+                    const endTime = performance.now();
+                    const latency = (endTime - startTime).toFixed(2);
+                    
+                    if (response.ok) {
+                        displayMessage(`✅ SUCCESS (${response.status}): /api/health - Response time: ${latency}ms`);
+                        
+                        // Display headers
+                        const headers = {};
+                        response.headers.forEach((value, key) => {
+                            headers[key] = value;
+                        });
+                        
+                        headersInfo.textContent = JSON.stringify(headers, null, 2);
+                        headersTitle.style.display = 'block';
+                        headersInfo.style.display = 'block';
+                        
+                        // Display response data
+                        try {
+                            const data = await response.json();
+                            responseData.textContent = JSON.stringify(data, null, 2);
+                            responseTitle.style.display = 'block';
+                            responseData.style.display = 'block';
+                            
+                            // Analyze response structure
+                            const fields = Object.keys(data);
+                            displayMessage(`Found ${fields.length} top-level fields in response: ${fields.join(', ')}`);
+                            
+                            // Identify system information
+                            if (data.status) {
+                                displayMessage(`System status: ${data.status}`);
+                            }
+                            
+                            // Check for upload capabilities
+                            if (data.uploads) {
+                                const uploadTypes = Object.keys(data.uploads);
+                                const enabledUploads = uploadTypes.filter(type => data.uploads[type]);
+                                displayMessage(`Upload capabilities: ${enabledUploads.join(', ')} enabled`);
+                            }
+                            
+                            // Generate recommendations
+                            displayMessage(`Based on the response, your API appears to be a catering system with file upload capabilities.`);
+                            displayMessage(`Recommendation: Implement additional endpoints suggested in the Implementation Guide below.`);
+                        } catch (e) {
+                            displayMessage(`Error parsing response: ${e.message}`, true);
+                        }
+                    } else {
+                        displayMessage(`❌ FAILED (${response.status}): /api/health`, true);
+                    }
+                } catch (error) {
+                    displayMessage(`❌ ERROR accessing endpoint: ${error.message}`, true);
+                }
+            });
+            
+            document.getElementById('clear-results').addEventListener('click', () => {
+                resultsDiv.innerHTML = '';
+                headersInfo.style.display = 'none';
+                responseData.style.display = 'none';
+                headersTitle.style.display = 'none';
+                responseTitle.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

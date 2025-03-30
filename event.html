@@ -27,6 +27,174 @@
 
         <!-- Template Stylesheet -->
         <link href="css/style.css" rel="stylesheet">
+        <style>
+    
+    
+            /* Tab Navigation */
+            .tab-nav {
+                display: flex;
+                justify-content: center;
+                margin-bottom: 20px;
+            }
+    
+            .tab-button {
+                background: none;
+                border: none;
+                padding: 10px 20px;
+                margin: 0 5px;
+                border-radius: 20px;
+                cursor: pointer;
+                font-weight: 600;
+                color: var(--bs-dark);
+                transition: all 0.3s ease;
+            }
+    
+            .tab-button.active {
+                background: var(--bs-primary);
+                color: var(--bs-white);
+            }
+    
+            .tab-button:hover:not(.active) {
+                background: rgba(0,0,0,0.05);
+            }
+    
+            /* Event Cards */
+            #events-container {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 25px;
+            }
+    
+            .event-card {
+                background: var(--bs-white);
+                border-radius: 15px;
+                overflow: hidden;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                transition: all 0.4s ease;
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                animation: fadeIn 0.5s ease forwards;
+                opacity: 0;
+            }
+    
+            .event-card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            }
+    
+            .event-image {
+                position: relative;
+                height: 200px;
+                overflow: hidden;
+            }
+    
+            .event-image img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.5s ease;
+            }
+    
+            .event-card:hover .event-image img {
+                transform: scale(1.1);
+            }
+    
+            .event-date-badge {
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+                color: var(--bs-white);
+                padding: 10px;
+                border-radius: 8px;
+                font-weight: bold;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                text-align: center;
+            }
+    
+            .event-content {
+                padding: 20px;
+                flex-grow: 1;
+                display: flex;
+                flex-direction: column;
+            }
+    
+            .event-title {
+                font-size: 1.3rem;
+                margin-bottom: 10px;
+                color: var(--bs-primary);
+                font-family: 'Playball', cursive;
+                font-weight: 400;
+            }
+    
+            .event-meta {
+                display: flex;
+                margin-bottom: 15px;
+                font-size: 0.9rem;
+            }
+    
+            .event-meta div {
+                display: flex;
+                align-items: center;
+                margin-right: 15px;
+            }
+    
+            .event-meta i {
+                margin-right: 5px;
+                color: #ffb347;
+            }
+    
+            .event-description {
+                margin-bottom: 20px;
+                color: var(--bs-dark);
+                flex-grow: 1;
+            }
+    
+            .event-footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: auto;
+            }
+    
+            .event-attendees {
+                font-size: 0.9rem;
+                color: var(--bs-secondary);
+            }
+    
+            .register-btn {
+                background: var(--bs-secondary);
+                color: var(--bs-white);
+                border: none;
+                padding: 8px 15px;
+                border-radius: 25px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                font-size: 0.9rem;
+                font-weight: 600;
+            }
+    
+            .register-btn:hover {
+                background: var(--bs-primary);
+                transform: translateY(-2px);
+            }
+    
+            .register-btn:disabled {
+                background: #cccccc;
+                cursor: not-allowed;
+                transform: none;
+            }
+    
+            /* Footer */
+         
+    
+            /* Spinner */
+            
+    
+            /* Responsive */
+           
+        </style>
     </head>
 
     <body>
@@ -55,20 +223,11 @@
                             <a href="service.html" class="nav-item nav-link">Services</a>
                             <a href="event.html" class="nav-item nav-link active">Events</a>
                             <a href="menu.html" class="nav-item nav-link">Menu</a>
-                            <div class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                                <div class="dropdown-menu bg-light">
-                                    <a href="book.html" class="dropdown-item">Booking</a>
-                                    <a href="blog.html" class="dropdown-item">Our Blog</a>
-                                    <a href="team.html" class="dropdown-item">Our Team</a>
-                                    <a href="testimonial.html" class="dropdown-item">Testimonial</a>
-                                    <a href="404.html" class="dropdown-item">404 Page</a>
-                                </div>
-                            </div>
+                            <a href="team.html" class="nav-item nav-link">Our Gallery</a>
                             <a href="contact.html" class="nav-item nav-link">Contact</a>
                         </div>
                         <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button>
-                        <a href="" class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Book Now</a>
+                        <a href="book.html" class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Book Now</a>
                     </div>
                 </nav>
             </div>
@@ -96,18 +255,18 @@
         <!-- Modal Search End -->
 
 
-        <!-- Hero Start -->
-        <div class="container-fluid bg-light py-6 my-6 mt-0">
-            <div class="container text-center animated bounceInDown">
-                <h1 class="display-1 mb-4">Events</h1>
-                <ol class="breadcrumb justify-content-center mb-0 animated bounceInDown">
-                    <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item"><a href="#">Pages</a></li>
-                    <li class="breadcrumb-item text-dark" aria-current="page">Events</li>
-                </ol>
-            </div>
-        </div>
-        <!-- Hero End -->
+      <!-- Hero Start -->
+<div class="container-fluid py-6 mt-0" style="background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1547592180-85f173990554?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') no-repeat center center; background-size: cover; min-height: 500px; display: flex; align-items: center;">
+    <div class="container text-center animated bounceInDown">
+        <h1 class="display-1 mb-4 text-white font-weight-bold">Our Events</h1>
+        <ol class="breadcrumb justify-content-center mb-0 animated bounceInDown bg-transparent">
+            <li class="breadcrumb-item"><a href="#" class="text-white">Home</a></li>
+            <li class="breadcrumb-item"><a href="#" class="text-white">Pages</a></li>
+            <li class="breadcrumb-item text-white" aria-current="page">Events</li>
+        </ol>
+    </div>
+</div>
+<!-- Hero End -->
 
 
         <!-- Events Start -->
@@ -335,6 +494,258 @@
             </div>
         </div>
         <!-- Events End -->
+        
+    
+
+        <!-- Spinner Start -->
+      
+        <!-- Spinner End -->
+    
+        
+        <!-- Navbar End -->
+    
+        <div class="container">
+           
+    
+            <section id="events-section" class="bg-white rounded-3 shadow py-5 px-4">
+                <h2 class="text-center mb-4" style="font-family: 'Playball', cursive; font-weight: 400;">Our Events Calendar</h2>
+                
+                <div class="tab-nav">
+                    <button class="tab-button active" data-status="upcoming">Upcoming Events</button>
+                    <button class="tab-button" data-status="past">Past Events</button>
+                    <button class="tab-button" data-status="all">All Events</button>
+                </div>
+                
+                <div id="events-container"></div>
+            </section>
+        </div>
+    
+    
+        <!-- Footer End -->
+    
+        <!-- Back to Top -->
+        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="fas fa-arrow-up"></i></a>
+    
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+        <script>document.addEventListener('DOMContentLoaded', () => {
+            // Hide spinner after page loads
+            setTimeout(() => {
+                document.getElementById('spinner').classList.remove('show');
+            }, 1000);
+            
+            // Base API URL - updated to use deployed endpoint
+            const API_BASE_URL = 'https://catering-backend-pewm.onrender.com/api';
+            const BASE_URL = 'https://catering-backend-pewm.onrender.com';
+            
+            // Define a local fallback image (you'll need to add this to your project)
+            const FALLBACK_IMAGE = '/assets/images/event-placeholder.jpg'; // Update this to your actual local placeholder path
+            
+            const eventsContainer = document.getElementById('events-container');
+            const tabButtons = document.querySelectorAll('.tab-button');
+            
+            let currentStatus = 'upcoming'; // Default view
+            
+            // Format date for display
+            function formatDate(dateString) {
+                const options = { year: 'numeric', month: 'short', day: 'numeric' };
+                return new Date(dateString).toLocaleDateString('en-US', options);
+            }
+            
+            // Format time for display
+            function formatTime(timeString) {
+                try {
+                    const [hours, minutes] = timeString.split(':');
+                    const date = new Date();
+                    date.setHours(parseInt(hours));
+                    date.setMinutes(parseInt(minutes));
+                    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                } catch (e) {
+                    return timeString;
+                }
+            }
+            
+            // Get date badge parts
+            function getDateBadgeParts(dateString) {
+                const date = new Date(dateString);
+                const month = date.toLocaleString('en-US', { month: 'short' });
+                const day = date.getDate();
+                return { month, day };
+            }
+            
+            // Check if event is full
+            function isEventFull(event) {
+                return event.maxAttendees && event.registeredAttendees >= event.maxAttendees;
+            }
+            
+            // Create base64 encoded placeholder image
+            function createDataURIPlaceholder() {
+                // Simple gray rectangle with text as SVG
+                const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200">
+                    <rect width="300" height="200" fill="#e0e0e0"/>
+                    <text x="50%" y="50%" font-family="Arial" font-size="24" text-anchor="middle" fill="#666">No Image</text>
+                </svg>`;
+                
+                // Convert to base64
+                const base64 = btoa(svg);
+                return `data:image/svg+xml;base64,${base64}`;
+            }
+            
+            // Fetch events based on status
+            async function fetchEvents(status = 'upcoming') {
+                try {
+                    // Show loading state
+                    eventsContainer.innerHTML = '<div class="text-center w-100"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+                    
+                    let url = `${API_BASE_URL}/events`;
+                    if (status !== 'all') {
+                        url += `?status=${status}`;
+                    }
+                    
+                    const response = await fetch(url);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    
+                    const events = await response.json();
+                    
+                    // Clear existing container
+                    eventsContainer.innerHTML = '';
+                    
+                    if (events.length === 0) {
+                        eventsContainer.innerHTML = '<p class="text-center w-100">No events found.</p>';
+                        return;
+                    }
+                    
+                    // Generate a fallback image data URI
+                    const fallbackImageDataURI = createDataURIPlaceholder();
+                    
+                    events.forEach((event, index) => {
+                        const eventCard = document.createElement('div');
+                        eventCard.classList.add('event-card');
+                        eventCard.style.animationDelay = `${index * 0.1}s`;
+                        
+                        const dateInfo = getDateBadgeParts(event.date);
+                        const isFull = isEventFull(event);
+                        
+                        // Image URL with fallback
+                        const imageUrl = event.image 
+                            ? `${BASE_URL}/uploads/images/events/${event.image}`
+                            : fallbackImageDataURI;
+                        
+                        eventCard.innerHTML = `
+                            <div class="event-image">
+                                <img src="${imageUrl}" alt="${event.title}" 
+                                     onerror="this.onerror=null; this.src='${fallbackImageDataURI}';">
+                                <div class="event-date-badge">
+                                    <div>${dateInfo.month}</div>
+                                    <div>${dateInfo.day}</div>
+                                </div>
+                            </div>
+                            <div class="event-content">
+                                <h3 class="event-title">${event.title}</h3>
+                                <div class="event-meta">
+                                    <div><i class="fas fa-calendar-alt"></i> ${formatDate(event.date)}</div>
+                                    <div><i class="fas fa-clock"></i> ${formatTime(event.time)}</div>
+                                    <div><i class="fas fa-map-marker-alt"></i> ${event.location}</div>
+                                </div>
+                                <div class="event-description">${event.description}</div>
+                                <div class="event-footer">
+                                    <div class="event-attendees">
+                                        <i class="fas fa-users"></i> 
+                                        ${event.registeredAttendees} ${event.maxAttendees ? `/ ${event.maxAttendees}` : ''} attendees
+                                    </div>
+                                    <button class="register-btn" data-event-id="${event._id}" 
+                                        ${isFull || event.status === 'past' ? 'disabled' : ''}>
+                                        ${isFull ? 'Fully Booked' : event.status === 'past' ? 'Event Ended' : 'Register'}
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        
+                        eventsContainer.appendChild(eventCard);
+                    });
+                    
+                    // Add event listeners to register buttons
+                    document.querySelectorAll('.register-btn').forEach(button => {
+                        if (!button.disabled) {
+                            button.addEventListener('click', registerForEvent);
+                        }
+                    });
+                    
+                } catch (error) {
+                    console.error('Error fetching events:', error);
+                    eventsContainer.innerHTML = `<p class="text-center w-100">Error loading events: ${error.message}. Please try again later.</p>`;
+                }
+            }
+            
+            // Register for event
+            async function registerForEvent(e) {
+                const button = e.target;
+                const eventId = button.dataset.eventId;
+                
+                try {
+                    button.disabled = true;
+                    button.textContent = 'Processing...';
+                    
+                    const response = await fetch(`${API_BASE_URL}/events/${eventId}/register`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        // Refresh events after registration
+                        alert('Registration successful! We look forward to seeing you.');
+                        fetchEvents(currentStatus);
+                    } else {
+                        const error = await response.json();
+                        alert(error.message || 'Failed to register for the event');
+                        button.disabled = false;
+                        button.textContent = 'Register';
+                    }
+                } catch (error) {
+                    console.error('Error registering for event:', error);
+                    alert('Failed to register for the event. Please try again.');
+                    button.disabled = false;
+                    button.textContent = 'Register';
+                }
+            }
+            
+            // Tab navigation
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    currentStatus = button.dataset.status;
+                    fetchEvents(currentStatus);
+                });
+            });
+            
+            // Back to top button
+            const backToTopButton = document.querySelector('.back-to-top');
+            window.addEventListener('scroll', () => {
+                if (window.pageYOffset > 300) {
+                    backToTopButton.style.display = 'flex';
+                } else {
+                    backToTopButton.style.display = 'none';
+                }
+            });
+            
+            backToTopButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+            
+            // Hide back to top button initially
+            backToTopButton.style.display = 'none';
+            
+            // Initial fetch of events
+            fetchEvents('upcoming');
+        });
+        </script>
 
 
         <!-- Book Us Start -->
@@ -425,7 +836,6 @@
         <!-- Book Us End -->
 
 
-        <!-- Footer Start -->
         <div class="container-fluid footer py-6 my-6 mb-0 bg-light wow bounceInUp" data-wow-delay="0.1s">
             <div class="container">
                 <div class="row">
@@ -452,17 +862,16 @@
                             </div>
                         </div>
                     </div>
-                  <div class="col-lg-3 col-md-6">
+                   <div class="col-lg-3 col-md-6">
                         <div class="footer-item">
                             <h4 class="mb-4">Contact Us</h4>
                             <div class="d-flex flex-column align-items-start">
                                 <p><i class="fa fa-map-marker-alt text-primary me-2"></i>Panruti, Cuddalore </p>
-                                <p><i class="fa fa-phone-alt text-primary me-2"></i> (+91) 89730 85571</p>
+                                <p><i class="fa fa-phone-alt text-primary me-2"></i> +91 89730 20655</p>
                                 <p><i class="fas fa-envelope text-primary me-2"></i> vigneshcateringservices.com</p>
                                 <p><i class="fa fa-clock text-primary me-2"></i> 26/7 Hours Service</p>
                             </div>
                         </div>
-                    </div>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <div class="footer-item">
@@ -492,8 +901,6 @@
                 </div>
             </div>
         </div>
-        <!-- Footer End -->
-
 
         <!-- Copyright Start -->
         <div class="container-fluid copyright bg-dark py-4">

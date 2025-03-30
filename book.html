@@ -56,16 +56,7 @@
                             <a href="service.html" class="nav-item nav-link">Services</a>
                             <a href="event.html" class="nav-item nav-link">Events</a>
                             <a href="menu.html" class="nav-item nav-link">Menu</a>
-                            <div class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">Pages</a>
-                                <div class="dropdown-menu bg-light">
-                                    <a href="book.html" class="dropdown-item active">Booking</a>
-                                    <a href="blog.html" class="dropdown-item">Our Blog</a>
-                                    <a href="team.html" class="dropdown-item">Our Team</a>
-                                    <a href="testimonial.html" class="dropdown-item">Testimonial</a>
-                                    <a href="404.html" class="dropdown-item">404 Page</a>
-                                </div>
-                            </div>
+                            <a href="team.html" class="nav-item nav-link">Our Gallery</a>
                             <a href="contact.html" class="nav-item nav-link">Contact</a>
                         </div>
                         <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button>
@@ -97,109 +88,94 @@
         <!-- Modal Search End -->
 
 
-        <!-- Hero Start -->
-        <div class="container-fluid bg-light py-6 my-6 mt-0">
-            <div class="container text-center animated bounceInDown">
-                <h1 class="display-1 mb-4">Booking</h1>
-                <ol class="breadcrumb justify-content-center mb-0 animated bounceInDown">
-                    <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item"><a href="#">Pages</a></li>
-                    <li class="breadcrumb-item text-dark" aria-current="page">Booking</li>
-                </ol>
-            </div>
-        </div>
-        <!-- Hero End -->
+ <!-- Hero Start -->
+<div class="container-fluid py-6 mt-0" style="background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') no-repeat center center; background-size: cover; min-height: 500px; display: flex; align-items: center;">
+    <div class="container text-center animated bounceInDown">
+        <h1 class="display-1 mb-4 text-white font-weight-bold">Make a Booking</h1>
+        <ol class="breadcrumb justify-content-center mb-0 animated bounceInDown bg-transparent">
+            <li class="breadcrumb-item"><a href="#" class="text-white">Home</a></li>
+            <li class="breadcrumb-item"><a href="#" class="text-white">Pages</a></li>
+            <li class="breadcrumb-item text-white" aria-current="page">Booking</li>
+        </ol>
+    </div>
+</div>
+<!-- Hero End -->
 
 
         <!-- Book Us Start -->
           <!-- Contact Form Section -->
-    <div class="container-fluid contact py-6 wow bounceInUp" data-wow-delay="0.1s">
-        <div class="container">
-            <div class="row g-0">
-                <!-- Left Image -->
-                <div class="col-1">
-                    <img src="img/background-site.jpg" class="img-fluid h-100 w-100 rounded-start" style="object-fit: cover; opacity: 0.7;" alt="">
-                </div>
-                <!-- Form Section -->
-                <div class="col-10">
-                    <div class="border-bottom border-top border-primary bg-light py-5 px-4">
-                        <div class="text-center">
-                            <small class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">Book Us</small>
-                            <h1 class="display-5 mb-5">Where you want Our Services</h1>
+          <div class="container-fluid contact py-6 wow bounceInUp" data-wow-delay="0.1s">
+            <div class="container">
+                <div class="row g-0">
+                    <!-- Left Image -->
+                    <div class="col-1">
+                        <img src="img/background-site.jpg" class="img-fluid h-100 w-100 rounded-start" style="object-fit: cover; opacity: 0.7;" alt="">
+                    </div>
+                    <!-- Form Section -->
+                    <div class="col-10">
+                        <div class="border-bottom border-top border-primary bg-light py-5 px-4">
+                            <div class="text-center">
+                                <small class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">Book Us</small>
+                                <h1 class="display-5 mb-5">Where you want Our Services</h1>
+                            </div>
+                            <div class="row g-4 form">
+                                <!-- Dropdowns -->
+                                <div class="col-lg-4 col-md-6">
+                                    <input type="text" id="name" class="form-control border-primary p-2" placeholder="Enter Your Name">
+                                </div>
+                                <div class="col-lg-4 col-md-6">
+                                    <input type="text" id="place" class="form-control border-primary p-2" placeholder="Enter the Place">
+                                </div>
+                                <div class="col-lg-4 col-md-6">
+                                    <input type="text" id="functionname" class="form-control border-primary p-2" placeholder="Enter the Function">
+                                </div>
+                                <div class="col-lg-4 col-md-6">
+                                    <select class="form-select border-primary p-2">
+                                        <option selected>Event Type</option>
+                                        <option value="Small Event">Small Event</option>
+                                        <option value="Big Event">Big Event</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-4 col-md-6">
+                                    <select class="form-select border-primary p-2">
+                                        <option selected>No. Of Guests</option>
+                                        <option value="100-200">100-200</option>
+                                        <option value="300-400">300-400</option>
+                                        <option value="500-600">500-600</option>
+                                        <option value="700-800">700-800</option>
+                                        <option value="1000+">1000+</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-4 col-md-6">
+                                    <select class="form-select border-primary p-2">
+                                        <option selected>Food Preference</option>
+                                        <option value="Vegetarian">Vegetarian</option>
+                                        <option value="Non-Vegetarian">Non Vegetarian</option>
+                                    </select>
+                                </div>
+                                <!-- Input Fields -->
+                                <div class="col-lg-4 col-md-6">
+                                    <input type="text" id="mobile" class="form-control border-primary p-2" placeholder="Your Contact No.">
+                                </div>
+                                <div class="col-lg-4 col-md-6">
+                                    <input type="date" id="date" class="form-control border-primary p-2">
+                                </div>
+                                <div class="col-lg-4 col-md-6">
+                                    <input type="email" id="email" class="form-control border-primary p-2" placeholder="Enter Your Email">
+                                </div>
+                                <!-- Submit Button -->
+                                <div class="col-12 text-center">
+                                    <button type="button" id="submitBtn" class="btn btn-primary px-5 py-3 rounded-pill">Submit Now</button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="row g-4 form">
-                            <!-- Dropdowns -->
-                            <div class="col-lg-4 col-md-6">
-                                <select class="form-select border-primary p-2">
-                                    <option selected>Select Country</option>
-                                    <option value="USA">USA</option>
-                                    <option value="UK">UK</option>
-                                    <option value="India">India</option>
-                                </select>
-                            </div>
-                            <div class="col-lg-4 col-md-6">
-                                <select class="form-select border-primary p-2">
-                                    <option selected>Select City</option>
-                                    <option value="City1">City 1</option>
-                                    <option value="City2">City 2</option>
-                                    <option value="City3">City 3</option>
-                                </select>
-                            </div>
-                            <div class="col-lg-4 col-md-6">
-                                <select class="form-select border-primary p-2">
-                                    <option selected>Select Palace</option>
-                                    <option value="Palace1">Palace 1</option>
-                                    <option value="Palace2">Palace 2</option>
-                                    <option value="Palace3">Palace 3</option>
-                                </select>
-                            </div>
-                            <div class="col-lg-4 col-md-6">
-                                <select class="form-select border-primary p-2">
-                                    <option selected>Event Type</option>
-                                    <option value="Small Event">Small Event</option>
-                                    <option value="Big Event">Big Event</option>
-                                </select>
-                            </div>
-                            <div class="col-lg-4 col-md-6">
-                                <select class="form-select border-primary p-2">
-                                    <option selected>No. Of Guests</option>
-                                    <option value="100-200">100-200</option>
-                                    <option value="300-400">300-400</option>
-                                    <option value="500-600">500-600</option>
-                                    <option value="700-800">700-800</option>
-                                    <option value="1000+">1000+</option>
-                                </select>
-                            </div>
-                            <div class="col-lg-4 col-md-6">
-                                <select class="form-select border-primary p-2">
-                                    <option selected>Food Preference</option>
-                                    <option value="Vegetarian">Vegetarian</option>
-                                    <option value="Non-Vegetarian">Non Vegetarian</option>
-                                </select>
-                            </div>
-                            <!-- Input Fields -->
-                            <div class="col-lg-4 col-md-6">
-                                <input type="text" id="mobile" class="form-control border-primary p-2" placeholder="Your Contact No.">
-                            </div>
-                            <div class="col-lg-4 col-md-6">
-                                <input type="date" id="date" class="form-control border-primary p-2">
-                            </div>
-                            <div class="col-lg-4 col-md-6">
-                                <input type="email" id="email" class="form-control border-primary p-2" placeholder="Enter Your Email">
-                            </div>
-                            <!-- Submit Button -->
-                            <div class="col-12 text-center">
-                                <button type="button" id="submitBtn" class="btn btn-primary px-5 py-3 rounded-pill" databookingnumber="9342400879">Submit Now</button>
-                            </div>
-                            </div>
-                            </div>
-                            </div>
-                <!-- Right Image -->
-                <div class="col-1">
-                    <img src="img/background-site.jpg" class="img-fluid h-100 w-100 rounded-end" style="object-fit: cover; opacity: 0.7;" alt="">
+                    </div>
+                    <!-- Right Image -->
+                    <div class="col-1">
+                        <img src="img/background-site.jpg" class="img-fluid h-100 w-100 rounded-end" style="object-fit: cover; opacity: 0.7;" alt="">
+                    </div>
                 </div>
             </div>
-        </div>
         <!-- Book Us End -->
 
 
@@ -235,7 +211,7 @@
                             <h4 class="mb-4">Contact Us</h4>
                             <div class="d-flex flex-column align-items-start">
                                 <p><i class="fa fa-map-marker-alt text-primary me-2"></i>Panruti, Cuddalore </p>
-                                <p><i class="fa fa-phone-alt text-primary me-2"></i> (+91) 89730 85571</p>
+                                <p><i class="fa fa-phone-alt text-primary me-2"></i> +91 89730 20655</p>
                                 <p><i class="fas fa-envelope text-primary me-2"></i> vigneshcateringservices.com</p>
                                 <p><i class="fa fa-clock text-primary me-2"></i> 26/7 Hours Service</p>
                             </div>
@@ -309,42 +285,6 @@
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
     <script>
-    document.getElementById('submitBtn').addEventListener('click', function () {
-        let mobile = document.getElementById('mobile').value;
-        let date = document.getElementById('date').value;
-        let email = document.getElementById('email').value;
-        let bookingNumber = this.getAttribute('databookingnumber'); // Get the booking number
-
-        if (!mobile || !date || !email) {
-            alert('Please fill in all required fields.');
-            return;
-        }
-
-        let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            alert('Please enter a valid email address.');
-            return;
-        }
-
-        let formData = new FormData(document.getElementById('bookingForm'));
-        formData.append('bookingNumber', bookingNumber); // Add it to the form data
-
-        fetch('your_backend_endpoint', { //Replace your_backend_endpoint
-            method: 'POST',
-            body: formData
-        })
-        .then(response => {
-            if (response.ok) {
-                alert('Booking information sent successfully!');
-            } else {
-                alert('Failed to send booking information. Please try again.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred. Please try again later.');
-        });
-    });
         
     </script>
 
