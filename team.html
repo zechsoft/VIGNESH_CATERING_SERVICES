@@ -263,12 +263,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const API_ENDPOINT = `${API_BASE_URL}/api`;
     
     const mediaUploadForm = document.getElementById('media-upload-form');
-    const mediaEditForm = document.getElementById('media-edit-form');
     const imagesContainer = document.getElementById('images-container');
     const videosContainer = document.getElementById('videos-container');
     const filterButtons = document.querySelectorAll('.filter-btn');
-    const editModal = document.getElementById('edit-modal');
-    const deleteModal = document.getElementById('delete-modal');
     const loader = document.querySelector('.loader');
 
     // Hide loader after content loads
@@ -423,16 +420,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     imgContainer.appendChild(img);
                     mediaElement.appendChild(imgContainer);
                     
-                    // Add media info with action buttons
+                    // Add media info without action buttons
                     const infoDiv = document.createElement('div');
                     infoDiv.className = 'media-info';
                     infoDiv.innerHTML = `
                         <h3>${media.title || 'Untitled Image'}</h3>
                         <p>${media.description || ''}</p>
-                        <div class="action-buttons">
-                            <button class="edit-btn" data-id="${media._id}">Edit</button>
-                            <button class="delete-btn" data-id="${media._id}">Delete</button>
-                        </div>
                     `;
                     mediaElement.appendChild(infoDiv);
                     
@@ -480,16 +473,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     videoContainer.appendChild(videoElement);
                     mediaElement.appendChild(videoContainer);
                     
-                    // Add media info with action buttons
+                    // Add media info without action buttons
                     const infoDiv = document.createElement('div');
                     infoDiv.className = 'media-info';
                     infoDiv.innerHTML = `
                         <h3>${media.title || 'Untitled Video'}</h3>
                         <p>${media.description || ''}</p>
-                        <div class="action-buttons">
-                            <button class="edit-btn" data-id="${media._id}">Edit</button>
-                            <button class="delete-btn" data-id="${media._id}">Delete</button>
-                        </div>
                     `;
                     mediaElement.appendChild(infoDiv);
                     
@@ -508,15 +497,6 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Initialize with all items visible
             applyFilter('all');
-            
-            // Add event listeners to edit and delete buttons
-            document.querySelectorAll('.edit-btn').forEach(btn => {
-                btn.addEventListener('click', openEditModal);
-            });
-
-            document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.addEventListener('click', openDeleteModal);
-            });
         } catch (error) {
             console.error('Error fetching media:', error);
             imagesContainer.innerHTML = '<p class="error-message">Failed to load images. Please try again later.</p>';
@@ -619,167 +599,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
-    // Open edit modal
-    async function openEditModal(e) {
-        const mediaId = e.target.dataset.id;
-        
-        try {
-            // Fetch the media item details
-            const response = await fetch(`${API_ENDPOINT}/media`, {
-                method: 'GET',
-                credentials: 'omit',
-                headers: {
-                    'Accept': 'application/json'
-                }
-            });
-            const mediaList = await response.json();
-            const mediaItem = mediaList.find(item => item._id === mediaId);
-            
-            if (mediaItem) {
-                // Populate the edit form
-                document.getElementById('edit-media-id').value = mediaId;
-                document.getElementById('edit-media-title').value = mediaItem.title || '';
-                document.getElementById('edit-media-description').value = mediaItem.description || '';
-                
-                // Show the modal with animation
-                editModal.style.display = 'flex';
-                editModal.style.opacity = '0';
-                
-                setTimeout(() => {
-                    editModal.style.opacity = '1';
-                }, 10);
-            }
-        } catch (error) {
-            console.error('Error fetching media details:', error);
-            alert('Could not load media details. Please try again.');
-        }
-    }
-
-    // Open delete confirmation modal
-    function openDeleteModal(e) {
-        const mediaId = e.target.dataset.id;
-        document.getElementById('delete-media-id').value = mediaId;
-        
-        // Show the modal with animation
-        deleteModal.style.display = 'flex';
-        deleteModal.style.opacity = '0';
-        
-        setTimeout(() => {
-            deleteModal.style.opacity = '1';
-        }, 10);
-    }
-
-    // Close modals
-    if (editModal) {
-        document.getElementById('close-edit-modal').addEventListener('click', () => {
-            editModal.style.opacity = '0';
-            setTimeout(() => {
-                editModal.style.display = 'none';
-            }, 300);
-        });
-    }
-
-    if (deleteModal) {
-        document.getElementById('close-delete-modal').addEventListener('click', () => {
-            deleteModal.style.opacity = '0';
-            setTimeout(() => {
-                deleteModal.style.display = 'none';
-            }, 300);
-        });
-
-        document.getElementById('cancel-delete').addEventListener('click', () => {
-            deleteModal.style.opacity = '0';
-            setTimeout(() => {
-                deleteModal.style.display = 'none';
-            }, 300);
-        });
-    }
-
-    // Submit edit form
-    if (mediaEditForm) {
-        mediaEditForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const mediaId = document.getElementById('edit-media-id').value;
-            const mediaTitle = document.getElementById('edit-media-title').value;
-            const mediaDescription = document.getElementById('edit-media-description').value;
-            
-            try {
-                const response = await fetch(`${API_ENDPOINT}/media/${mediaId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        title: mediaTitle,
-                        description: mediaDescription
-                    }),
-                    credentials: 'omit'
-                });
-                
-                if (response.ok) {
-                    alert('Media updated successfully!');
-                    editModal.style.opacity = '0';
-                    setTimeout(() => {
-                        editModal.style.display = 'none';
-                    }, 300);
-                    fetchMedia(); // Refresh media list
-                } else {
-                    const errorData = await response.json();
-                    alert(`Update failed: ${errorData.message || 'Unknown error'}`);
-                }
-            } catch (error) {
-                console.error('Error updating media:', error);
-                alert('Error updating media. Please try again.');
-            }
-        });
-    }
-
-    // Confirm delete
-    if (deleteModal) {
-        document.getElementById('confirm-delete').addEventListener('click', async () => {
-            const mediaId = document.getElementById('delete-media-id').value;
-            
-            try {
-                const response = await fetch(`${API_ENDPOINT}/media/${mediaId}`, {
-                    method: 'DELETE',
-                    credentials: 'omit'
-                });
-                
-                if (response.ok) {
-                    alert('Media deleted successfully!');
-                    deleteModal.style.opacity = '0';
-                    setTimeout(() => {
-                        deleteModal.style.display = 'none';
-                    }, 300);
-                    fetchMedia(); // Refresh media list
-                } else {
-                    const errorData = await response.json();
-                    alert(`Delete failed: ${errorData.message || 'Unknown error'}`);
-                }
-            } catch (error) {
-                console.error('Error deleting media:', error);
-                alert('Error deleting media. Please try again.');
-            }
-        });
-    }
-
-    // Close modals when clicking outside
-    window.addEventListener('click', (e) => {
-        if (e.target === editModal) {
-            editModal.style.opacity = '0';
-            setTimeout(() => {
-                editModal.style.display = 'none';
-            }, 300);
-        }
-        if (e.target === deleteModal) {
-            deleteModal.style.opacity = '0';
-            setTimeout(() => {
-                deleteModal.style.display = 'none';
-            }, 300);
-        }
-    });
 
     // Add parallax effect
     document.addEventListener('mousemove', (e) => {
