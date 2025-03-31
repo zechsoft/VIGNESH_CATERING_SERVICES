@@ -601,13 +601,18 @@
 
     <script>
 document.addEventListener('DOMContentLoaded', () => {
+    // Hide spinner after page loads
+    setTimeout(() => {
+        document.getElementById('spinner').classList.remove('show');
+    }, 1000);
+    
     const eventForm = document.getElementById('event-form');
     const eventsContainer = document.getElementById('events-container');
     const tabButtons = document.querySelectorAll('.tab-button');
-    const formSubmitButton = eventForm.querySelector('button[type="submit"]');
+    const formSubmitButton = eventForm ? eventForm.querySelector('button[type="submit"]') : null;
     const cancelButton = document.getElementById('cancel-edit-btn');
     
-    // Base API URL - updated to use deployed endpoint
+    // Base URL for the deployed backend
     const BASE_URL = 'https://catering-backend-pewm.onrender.com';
     const API_URL = `${BASE_URL}/api`;
     
@@ -652,17 +657,49 @@ document.addEventListener('DOMContentLoaded', () => {
         return event.maxAttendees && event.registeredAttendees >= event.maxAttendees;
     }
     
+    // Create custom placeholder element instead of using external services
+    function createPlaceholderElement(title) {
+        const placeholderDiv = document.createElement('div');
+        placeholderDiv.className = 'placeholder-image';
+        placeholderDiv.style.width = '100%';
+        placeholderDiv.style.height = '200px'; // Slightly smaller for mobile
+        placeholderDiv.innerHTML = `<span>Image Not Found: ${title || 'Untitled'}</span>`;
+        return placeholderDiv;
+    }
+    
+    // Create data URI placeholder for images
+    function createDataURIPlaceholder() {
+        // Simple gray rectangle with text as SVG
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200">
+            <rect width="300" height="200" fill="#e0e0e0"/>
+            <text x="50%" y="50%" font-family="Arial" font-size="24" text-anchor="middle" fill="#666">No Image</text>
+        </svg>`;
+        
+        // Convert to base64
+        const base64 = btoa(svg);
+        return `data:image/svg+xml;base64,${base64}`;
+    }
+    
+    // Check if device is mobile
+    function isMobile() {
+        return window.innerWidth <= 768;
+    }
+    
     // Reset form to add mode
     function resetFormToAddMode() {
+        if (!eventForm) return;
+        
         eventForm.reset();
         currentEditingEventId = null;
         formSubmitButton.textContent = 'Add Event';
         document.getElementById('form-title').textContent = 'Add New Event';
-        cancelButton.style.display = 'none';
+        if (cancelButton) cancelButton.style.display = 'none';
     }
     
     // Load event data into form for editing
     function loadEventForEditing(event) {
+        if (!eventForm) return;
+        
         document.getElementById('event-title').value = event.title;
         document.getElementById('event-date').value = formatDateForInput(event.date);
         document.getElementById('event-time').value = event.time;
@@ -674,17 +711,18 @@ document.addEventListener('DOMContentLoaded', () => {
         currentEditingEventId = event._id;
         formSubmitButton.textContent = 'Update Event';
         document.getElementById('form-title').textContent = 'Edit Event';
-        cancelButton.style.display = 'block';
+        if (cancelButton) cancelButton.style.display = 'block';
         
         // Scroll to the form
-        document.getElementById('event-form-section').scrollIntoView({ behavior: 'smooth' });
+        const formSection = document.getElementById('event-form-section');
+        if (formSection) formSection.scrollIntoView({ behavior: 'smooth' });
     }
     
     // Fetch events based on status
     async function fetchEvents(status = 'upcoming') {
         try {
             // Show loading indicator
-            eventsContainer.innerHTML = '<p>Loading events...</p>';
+            eventsContainer.innerHTML = '<div class="text-center w-100"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>';
             
             let url = `${API_URL}/events`;
             if (status !== 'all') {
@@ -692,15 +730,23 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             const response = await fetch(url);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            
             const events = await response.json();
             
             // Clear existing container
             eventsContainer.innerHTML = '';
             
             if (events.length === 0) {
-                eventsContainer.innerHTML = '<p>No events found.</p>';
+                eventsContainer.innerHTML = '<p class="text-center w-100">No events found.</p>';
                 return;
             }
+            
+            // Generate a fallback image data URI
+            const fallbackImageDataURI = createDataURIPlaceholder();
             
             events.forEach((event, index) => {
                 const eventCard = document.createElement('div');
@@ -710,19 +756,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 const dateInfo = getDateBadgeParts(event.date);
                 const isFull = isEventFull(event);
                 
-                // Build proper image URL
-                let imageUrl;
-                if (event.image) {
-                    imageUrl = `${BASE_URL}/uploads/images/events/${event.image}`;
-                } else {
-                    // Use a data URI for placeholder instead of external URL
-                    imageUrl = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22300%22%20height%3D%22200%22%20viewBox%3D%220%200%20300%20200%22%20preserveAspectRatio%3D%22none%22%3E%3Crect%20width%3D%22300%22%20height%3D%22200%22%20fill%3D%22%23cccccc%22%3E%3C%2Frect%3E%3Ctext%20x%3D%22150%22%20y%3D%22100%22%20font-size%3D%2220%22%20alignment-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20fill%3D%22%23333333%22%3EEvent%20Image%3C%2Ftext%3E%3C%2Fsvg%3E';
-                }
+                // Build proper image URL with fallback
+                const imageUrl = event.image 
+                    ? `${BASE_URL}/uploads/images/events/${event.image}`
+                    : fallbackImageDataURI;
                 
-                eventCard.innerHTML = `
+                // Determine whether to show admin controls based on URL
+                const isAdminPage = window.location.pathname.includes('admin') || window.location.pathname.includes('manage');
+                
+                // Create the HTML for the event card
+                let eventCardHTML = `
                     <div class="event-image">
-                        <img src="${imageUrl}" alt="${event.title}"
-                            onerror="this.onerror=null; this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22300%22%20height%3D%22200%22%20viewBox%3D%220%200%20300%20200%22%20preserveAspectRatio%3D%22none%22%3E%3Crect%20width%3D%22300%22%20height%3D%22200%22%20fill%3D%22%23cccccc%22%3E%3C%2Frect%3E%3Ctext%20x%3D%22150%22%20y%3D%22100%22%20font-size%3D%2220%22%20alignment-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20fill%3D%22%23333333%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E';">
+                        <img src="${imageUrl}" alt="${event.title}" 
+                             onerror="this.onerror=null; this.src='${fallbackImageDataURI}';">
                         <div class="event-date-badge">
                             <div>${dateInfo.month}</div>
                             <div>${dateInfo.day}</div>
@@ -741,6 +787,11 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <i class="fas fa-users"></i> 
                                 ${event.registeredAttendees} ${event.maxAttendees ? `/ ${event.maxAttendees}` : ''} attendees
                             </div>
+                `;
+                
+                // Add appropriate buttons based on whether this is admin or public view
+                if (isAdminPage) {
+                    eventCardHTML += `
                             <div class="button-group">
                                 <button class="register-btn" data-event-id="${event._id}" 
                                     ${isFull || event.status === 'past' ? 'disabled' : ''}>
@@ -753,10 +804,22 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <i class="fas fa-trash"></i> Delete
                                 </button>
                             </div>
+                    `;
+                } else {
+                    eventCardHTML += `
+                            <button class="register-btn" data-event-id="${event._id}" 
+                                ${isFull || event.status === 'past' ? 'disabled' : ''}>
+                                ${isFull ? 'Fully Booked' : event.status === 'past' ? 'Event Ended' : 'Register'}
+                            </button>
+                    `;
+                }
+                
+                eventCardHTML += `
                         </div>
                     </div>
                 `;
                 
+                eventCard.innerHTML = eventCardHTML;
                 eventsContainer.appendChild(eventCard);
             });
             
@@ -767,23 +830,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
             
-            document.querySelectorAll('.edit-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const eventId = e.currentTarget.dataset.eventId;
-                    editEvent(eventId);
+            if (document.querySelectorAll('.edit-btn').length > 0) {
+                document.querySelectorAll('.edit-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const eventId = e.currentTarget.dataset.eventId;
+                        editEvent(eventId);
+                    });
                 });
-            });
+            }
             
-            document.querySelectorAll('.delete-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const eventId = e.currentTarget.dataset.eventId;
-                    deleteEvent(eventId);
+            if (document.querySelectorAll('.delete-btn').length > 0) {
+                document.querySelectorAll('.delete-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const eventId = e.currentTarget.dataset.eventId;
+                        deleteEvent(eventId);
+                    });
                 });
-            });
+            }
             
         } catch (error) {
             console.error('Error fetching events:', error);
-            eventsContainer.innerHTML = '<p>Error loading events. Please try again later.</p>';
+            eventsContainer.innerHTML = `<p class="text-center w-100">Error loading events: ${error.message}. Please try again later.</p>`;
         }
     }
     
@@ -860,65 +927,99 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // Tab navigation
-    tabButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-            currentStatus = button.dataset.status;
-            fetchEvents(currentStatus);
+    if (tabButtons) {
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                currentStatus = button.dataset.status;
+                fetchEvents(currentStatus);
+            });
         });
-    });
+    }
     
     // Add/Edit event form submission
-    eventForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const formData = new FormData(eventForm);
-        let url, method;
-        
-        // If we're editing, use PUT method and include event ID
-        if (currentEditingEventId) {
-            url = `${API_URL}/events/${currentEditingEventId}`;
-            method = 'PUT';
-        } else {
-            url = `${API_URL}/events`;
-            method = 'POST';
-        }
-        
-        try {
-            formSubmitButton.disabled = true;
-            formSubmitButton.textContent = currentEditingEventId ? 'Updating...' : 'Submitting...';
+    if (eventForm) {
+        eventForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
             
-            const response = await fetch(url, {
-                method: method,
-                body: formData
-            });
+            const formData = new FormData(eventForm);
+            let url, method;
             
-            if (response.ok) {
-                resetFormToAddMode();
-                // Refresh events list
-                fetchEvents(currentStatus);
-                alert(currentEditingEventId ? 'Event updated successfully!' : 'Event added successfully!');
+            // If we're editing, use PUT method and include event ID
+            if (currentEditingEventId) {
+                url = `${API_URL}/events/${currentEditingEventId}`;
+                method = 'PUT';
             } else {
-                const errorData = await response.json();
-                alert(`Error: ${errorData.message}`);
+                url = `${API_URL}/events`;
+                method = 'POST';
             }
             
-            formSubmitButton.disabled = false;
-            formSubmitButton.textContent = currentEditingEventId ? 'Update Event' : 'Add Event';
-        } catch (error) {
-            console.error(`Error ${currentEditingEventId ? 'updating' : 'adding'} event:`, error);
-            alert(`Failed to ${currentEditingEventId ? 'update' : 'add'} event. Please try again.`);
-            
-            formSubmitButton.disabled = false;
-            formSubmitButton.textContent = currentEditingEventId ? 'Update Event' : 'Add Event';
-        }
-    });
+            try {
+                formSubmitButton.disabled = true;
+                formSubmitButton.textContent = currentEditingEventId ? 'Updating...' : 'Submitting...';
+                
+                const response = await fetch(url, {
+                    method: method,
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    resetFormToAddMode();
+                    // Refresh events list
+                    fetchEvents(currentStatus);
+                    alert(currentEditingEventId ? 'Event updated successfully!' : 'Event added successfully!');
+                } else {
+                    const errorData = await response.json();
+                    alert(`Error: ${errorData.message}`);
+                }
+                
+                formSubmitButton.disabled = false;
+                formSubmitButton.textContent = currentEditingEventId ? 'Update Event' : 'Add Event';
+            } catch (error) {
+                console.error(`Error ${currentEditingEventId ? 'updating' : 'adding'} event:`, error);
+                alert(`Failed to ${currentEditingEventId ? 'update' : 'add'} event. Please try again.`);
+                
+                formSubmitButton.disabled = false;
+                formSubmitButton.textContent = currentEditingEventId ? 'Update Event' : 'Add Event';
+            }
+        });
+    }
     
     // Add cancel button event listener
-    cancelButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        resetFormToAddMode();
+    if (cancelButton) {
+        cancelButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            resetFormToAddMode();
+        });
+    }
+    
+    // Back to top button functionality
+    const backToTopButton = document.querySelector('.back-to-top');
+    if (backToTopButton) {
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.style.display = 'flex';
+            } else {
+                backToTopButton.style.display = 'none';
+            }
+        });
+        
+        backToTopButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        
+        // Hide back to top button initially
+        backToTopButton.style.display = 'none';
+    }
+    
+    // Handle resize events to adjust UI
+    window.addEventListener('resize', () => {
+        // Update any height or display properties based on screen size
+        document.querySelectorAll('.media-item img, .media-item video').forEach(element => {
+            element.style.height = isMobile() ? '200px' : '250px';
+        });
     });
     
     // Initial fetch of events
