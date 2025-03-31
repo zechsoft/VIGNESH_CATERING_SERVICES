@@ -606,8 +606,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabButtons = document.querySelectorAll('.tab-button');
     const formSubmitButton = eventForm.querySelector('button[type="submit"]');
     const cancelButton = document.getElementById('cancel-edit-btn');
-    const editModal = document.getElementById('edit-modal');
-    const deleteModal = document.getElementById('delete-modal');
     
     // Base API URL - updated to use deployed endpoint
     const BASE_URL = 'https://catering-backend-pewm.onrender.com';
@@ -654,19 +652,32 @@ document.addEventListener('DOMContentLoaded', () => {
         return event.maxAttendees && event.registeredAttendees >= event.maxAttendees;
     }
     
-    // Check if device is mobile
-    function isMobile() {
-        return window.innerWidth <= 768;
+    // Reset form to add mode
+    function resetFormToAddMode() {
+        eventForm.reset();
+        currentEditingEventId = null;
+        formSubmitButton.textContent = 'Add Event';
+        document.getElementById('form-title').textContent = 'Add New Event';
+        cancelButton.style.display = 'none';
     }
     
-    // Create custom placeholder element instead of using external services
-    function createPlaceholderElement(title) {
-        const placeholderDiv = document.createElement('div');
-        placeholderDiv.className = 'placeholder-image';
-        placeholderDiv.style.width = '100%';
-        placeholderDiv.style.height = isMobile() ? '180px' : '220px';
-        placeholderDiv.innerHTML = `<span>Image Not Found: ${title || 'Event'}</span>`;
-        return placeholderDiv;
+    // Load event data into form for editing
+    function loadEventForEditing(event) {
+        document.getElementById('event-title').value = event.title;
+        document.getElementById('event-date').value = formatDateForInput(event.date);
+        document.getElementById('event-time').value = event.time;
+        document.getElementById('event-location').value = event.location;
+        document.getElementById('event-description').value = event.description;
+        document.getElementById('event-max-attendees').value = event.maxAttendees || '';
+        
+        // Update form state
+        currentEditingEventId = event._id;
+        formSubmitButton.textContent = 'Update Event';
+        document.getElementById('form-title').textContent = 'Edit Event';
+        cancelButton.style.display = 'block';
+        
+        // Scroll to the form
+        document.getElementById('event-form-section').scrollIntoView({ behavior: 'smooth' });
     }
     
     // Fetch events based on status
@@ -681,18 +692,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             const response = await fetch(url);
-            
-            if (!response.ok) {
-                throw new Error(`Failed to fetch events: ${response.status} ${response.statusText}`);
-            }
-            
             const events = await response.json();
             
             // Clear existing container
             eventsContainer.innerHTML = '';
             
             if (events.length === 0) {
-                eventsContainer.innerHTML = '<p class="no-content">No events found. Create an event to get started!</p>';
+                eventsContainer.innerHTML = '<p>No events found.</p>';
                 return;
             }
             
@@ -700,7 +706,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const eventCard = document.createElement('div');
                 eventCard.classList.add('event-card');
                 eventCard.style.animationDelay = `${index * 0.1}s`;
-                eventCard.dataset.id = event._id; // Store the event ID in the DOM
                 
                 const dateInfo = getDateBadgeParts(event.date);
                 const isFull = isEventFull(event);
@@ -710,132 +715,120 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (event.image) {
                     imageUrl = `${BASE_URL}/uploads/images/events/${event.image}`;
                 } else {
-                    // Use a data URI for placeholder
+                    // Use a data URI for placeholder instead of external URL
                     imageUrl = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22300%22%20height%3D%22200%22%20viewBox%3D%220%200%20300%20200%22%20preserveAspectRatio%3D%22none%22%3E%3Crect%20width%3D%22300%22%20height%3D%22200%22%20fill%3D%22%23cccccc%22%3E%3C%2Frect%3E%3Ctext%20x%3D%22150%22%20y%3D%22100%22%20font-size%3D%2220%22%20alignment-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20fill%3D%22%23333333%22%3EEvent%20Image%3C%2Ftext%3E%3C%2Fsvg%3E';
                 }
                 
-                // Create image container
-                const imgContainer = document.createElement('div');
-                imgContainer.className = 'event-image';
-                imgContainer.style.height = isMobile() ? '180px' : '220px';
-                imgContainer.style.overflow = 'hidden';
-                
-                // Create and add image element
-                const img = document.createElement('img');
-                img.alt = event.title || 'Event';
-                img.src = imageUrl;
-                
-                // Handle image loading error
-                img.onerror = function() {
-                    this.style.display = 'none';
-                    imgContainer.appendChild(createPlaceholderElement(event.title));
-                };
-                
-                // Create date badge
-                const dateBadge = document.createElement('div');
-                dateBadge.className = 'event-date-badge';
-                dateBadge.innerHTML = `<div>${dateInfo.month}</div><div>${dateInfo.day}</div>`;
-                
-                // Append image and date badge to container
-                imgContainer.appendChild(img);
-                imgContainer.appendChild(dateBadge);
-                eventCard.appendChild(imgContainer);
-                
-                // Create event content container
-                const contentDiv = document.createElement('div');
-                contentDiv.className = 'event-content';
-                contentDiv.innerHTML = `
-                    <h3 class="event-title">${event.title}</h3>
-                    <div class="event-meta">
-                        <div><i class="fas fa-calendar-alt"></i> ${formatDate(event.date)}</div>
-                        <div><i class="fas fa-clock"></i> ${formatTime(event.time)}</div>
-                        <div><i class="fas fa-map-marker-alt"></i> ${event.location}</div>
-                    </div>
-                    <div class="event-description">${event.description}</div>
-                    <div class="event-footer">
-                        <div class="event-attendees">
-                            <i class="fas fa-users"></i> 
-                            ${event.registeredAttendees} ${event.maxAttendees ? `/ ${event.maxAttendees}` : ''} attendees
+                eventCard.innerHTML = `
+                    <div class="event-image">
+                        <img src="${imageUrl}" alt="${event.title}"
+                            onerror="this.onerror=null; this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22300%22%20height%3D%22200%22%20viewBox%3D%220%200%20300%20200%22%20preserveAspectRatio%3D%22none%22%3E%3Crect%20width%3D%22300%22%20height%3D%22200%22%20fill%3D%22%23cccccc%22%3E%3C%2Frect%3E%3Ctext%20x%3D%22150%22%20y%3D%22100%22%20font-size%3D%2220%22%20alignment-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20fill%3D%22%23333333%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E';">
+                        <div class="event-date-badge">
+                            <div>${dateInfo.month}</div>
+                            <div>${dateInfo.day}</div>
                         </div>
-                        <div class="action-buttons">
-                            <button class="register-btn" data-id="${event._id}" 
-                                ${isFull || event.status === 'past' ? 'disabled' : ''}>
-                                ${isFull ? 'Fully Booked' : event.status === 'past' ? 'Event Ended' : 'Register'}
-                            </button>
-                            <button class="edit-btn" data-id="${event._id}">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                            <button class="delete-btn" data-id="${event._id}">
-                                <i class="fas fa-trash"></i> Delete
-                            </button>
+                    </div>
+                    <div class="event-content">
+                        <h3 class="event-title">${event.title}</h3>
+                        <div class="event-meta">
+                            <div><i class="fas fa-calendar-alt"></i> ${formatDate(event.date)}</div>
+                            <div><i class="fas fa-clock"></i> ${formatTime(event.time)}</div>
+                            <div><i class="fas fa-map-marker-alt"></i> ${event.location}</div>
+                        </div>
+                        <div class="event-description">${event.description}</div>
+                        <div class="event-footer">
+                            <div class="event-attendees">
+                                <i class="fas fa-users"></i> 
+                                ${event.registeredAttendees} ${event.maxAttendees ? `/ ${event.maxAttendees}` : ''} attendees
+                            </div>
+                            <div class="button-group">
+                                <button class="register-btn" data-event-id="${event._id}" 
+                                    ${isFull || event.status === 'past' ? 'disabled' : ''}>
+                                    ${isFull ? 'Fully Booked' : event.status === 'past' ? 'Event Ended' : 'Register'}
+                                </button>
+                                <button class="edit-btn" data-event-id="${event._id}">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="delete-btn" data-event-id="${event._id}">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `;
                 
-                eventCard.appendChild(contentDiv);
                 eventsContainer.appendChild(eventCard);
             });
             
             // Add event listeners to buttons
-            document.querySelectorAll('.register-btn').forEach(btn => {
-                if (!btn.disabled) {
-                    btn.addEventListener('click', registerForEvent);
+            document.querySelectorAll('.register-btn').forEach(button => {
+                if (!button.disabled) {
+                    button.addEventListener('click', registerForEvent);
                 }
             });
             
-            document.querySelectorAll('.edit-btn').forEach(btn => {
-                btn.addEventListener('click', openEditModal);
+            document.querySelectorAll('.edit-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const eventId = e.currentTarget.dataset.eventId;
+                    editEvent(eventId);
+                });
             });
             
-            document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.addEventListener('click', openDeleteModal);
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const eventId = e.currentTarget.dataset.eventId;
+                    deleteEvent(eventId);
+                });
             });
             
         } catch (error) {
             console.error('Error fetching events:', error);
-            eventsContainer.innerHTML = '<p class="error">Failed to load events. Please try again later.</p>';
+            eventsContainer.innerHTML = '<p>Error loading events. Please try again later.</p>';
         }
     }
     
-    // Open edit modal
-    async function openEditModal(e) {
-        const eventId = e.target.dataset.id;
-        currentEditingEventId = eventId;
-        
+    // Edit event - fetch and load data
+    async function editEvent(eventId) {
         try {
             const response = await fetch(`${API_URL}/events/${eventId}`);
-            const event = await response.json();
-            
-            if (event) {
-                // Populate the edit form
-                document.getElementById('edit-event-id').value = eventId;
-                document.getElementById('edit-event-title').value = event.title || '';
-                document.getElementById('edit-event-date').value = formatDateForInput(event.date);
-                document.getElementById('edit-event-time').value = event.time || '';
-                document.getElementById('edit-event-location').value = event.location || '';
-                document.getElementById('edit-event-description').value = event.description || '';
-                document.getElementById('edit-event-max-attendees').value = event.maxAttendees || '';
-                
-                // Show the modal
-                editModal.style.display = 'flex';
+            if (response.ok) {
+                const event = await response.json();
+                loadEventForEditing(event);
+            } else {
+                alert('Failed to load event details');
             }
         } catch (error) {
             console.error('Error fetching event details:', error);
-            alert('Could not load event details. Please try again.');
+            alert('Failed to load event details. Please try again.');
         }
     }
     
-    // Open delete confirmation modal
-    function openDeleteModal(e) {
-        const eventId = e.target.dataset.id;
-        document.getElementById('delete-event-id').value = eventId;
-        deleteModal.style.display = 'flex';
+    // Delete event
+    async function deleteEvent(eventId) {
+        if (confirm('Are you sure you want to delete this event?')) {
+            try {
+                const response = await fetch(`${API_URL}/events/${eventId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    alert('Event deleted successfully');
+                    fetchEvents(currentStatus);
+                } else {
+                    const errorData = await response.json();
+                    alert(`Failed to delete event: ${errorData.message}`);
+                }
+            } catch (error) {
+                console.error('Error deleting event:', error);
+                alert('Failed to delete event. Please try again.');
+            }
+        }
     }
     
     // Register for event
     async function registerForEvent(e) {
-        const button = e.target;
-        const eventId = button.dataset.id;
+        const button = e.currentTarget;
+        const eventId = button.dataset.eventId;
         
         try {
             button.disabled = true;
@@ -849,6 +842,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             
             if (response.ok) {
+                // Refresh events after registration
                 alert('Registration successful! We look forward to seeing you.');
                 fetchEvents(currentStatus);
             } else {
@@ -865,79 +859,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Submit edit form
-    document.getElementById('event-edit-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const eventId = document.getElementById('edit-event-id').value;
-        const formData = new FormData(document.getElementById('event-edit-form'));
-        
-        try {
-            const response = await fetch(`${API_URL}/events/${eventId}`, {
-                method: 'PUT',
-                body: formData
-            });
-            
-            if (response.ok) {
-                alert('Event updated successfully!');
-                editModal.style.display = 'none';
-                fetchEvents(currentStatus); // Refresh events list
-            } else {
-                const errorData = await response.json();
-                alert(`Update failed: ${errorData.message || 'Unknown error'}`);
-            }
-        } catch (error) {
-            console.error('Error updating event:', error);
-            alert('Error updating event. Please try again.');
-        }
-    });
-    
-    // Confirm delete
-    document.getElementById('confirm-delete').addEventListener('click', async () => {
-        const eventId = document.getElementById('delete-event-id').value;
-        
-        try {
-            const response = await fetch(`${API_URL}/events/${eventId}`, {
-                method: 'DELETE'
-            });
-            
-            if (response.ok) {
-                alert('Event deleted successfully!');
-                deleteModal.style.display = 'none';
-                fetchEvents(currentStatus); // Refresh events list
-            } else {
-                const errorData = await response.json();
-                alert(`Delete failed: ${errorData.message || 'Unknown error'}`);
-            }
-        } catch (error) {
-            console.error('Error deleting event:', error);
-            alert('Error deleting event. Please try again.');
-        }
-    });
-    
-    // Close modals
-    document.getElementById('close-edit-modal').addEventListener('click', () => {
-        editModal.style.display = 'none';
-    });
-    
-    document.getElementById('close-delete-modal').addEventListener('click', () => {
-        deleteModal.style.display = 'none';
-    });
-    
-    document.getElementById('cancel-delete').addEventListener('click', () => {
-        deleteModal.style.display = 'none';
-    });
-    
-    // Close modals when clicking outside
-    window.addEventListener('click', (e) => {
-        if (e.target === editModal) {
-            editModal.style.display = 'none';
-        }
-        if (e.target === deleteModal) {
-            deleteModal.style.display = 'none';
-        }
-    });
-    
     // Tab navigation
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -948,47 +869,56 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     
-    // Add new event form submission
+    // Add/Edit event form submission
     eventForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
         const formData = new FormData(eventForm);
+        let url, method;
+        
+        // If we're editing, use PUT method and include event ID
+        if (currentEditingEventId) {
+            url = `${API_URL}/events/${currentEditingEventId}`;
+            method = 'PUT';
+        } else {
+            url = `${API_URL}/events`;
+            method = 'POST';
+        }
         
         try {
             formSubmitButton.disabled = true;
-            formSubmitButton.textContent = 'Submitting...';
+            formSubmitButton.textContent = currentEditingEventId ? 'Updating...' : 'Submitting...';
             
-            const response = await fetch(`${API_URL}/events`, {
-                method: 'POST',
+            const response = await fetch(url, {
+                method: method,
                 body: formData
             });
             
             if (response.ok) {
-                alert('Event added successfully!');
-                eventForm.reset(); // Clear form
-                fetchEvents(currentStatus); // Refresh events list
+                resetFormToAddMode();
+                // Refresh events list
+                fetchEvents(currentStatus);
+                alert(currentEditingEventId ? 'Event updated successfully!' : 'Event added successfully!');
             } else {
                 const errorData = await response.json();
-                alert(`Error: ${errorData.message || 'Unknown error'}`);
+                alert(`Error: ${errorData.message}`);
             }
             
             formSubmitButton.disabled = false;
-            formSubmitButton.textContent = 'Add Event';
+            formSubmitButton.textContent = currentEditingEventId ? 'Update Event' : 'Add Event';
         } catch (error) {
-            console.error('Error adding event:', error);
-            alert('Failed to add event. Please try again.');
+            console.error(`Error ${currentEditingEventId ? 'updating' : 'adding'} event:`, error);
+            alert(`Failed to ${currentEditingEventId ? 'update' : 'add'} event. Please try again.`);
             
             formSubmitButton.disabled = false;
-            formSubmitButton.textContent = 'Add Event';
+            formSubmitButton.textContent = currentEditingEventId ? 'Update Event' : 'Add Event';
         }
     });
     
-    // Handle resize events to adjust UI
-    window.addEventListener('resize', () => {
-        // Update image heights based on screen size
-        document.querySelectorAll('.event-image').forEach(element => {
-            element.style.height = isMobile() ? '180px' : '220px';
-        });
+    // Add cancel button event listener
+    cancelButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        resetFormToAddMode();
     });
     
     // Initial fetch of events
